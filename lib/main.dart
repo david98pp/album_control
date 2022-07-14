@@ -1,3 +1,4 @@
+import 'package:album_control/model/sticker_model.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,32 +30,35 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    List<Sticker> listSticker = List<Sticker>.generate(801, (int index) => Sticker.params(index, '', 'A', 0));
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            // padding: EdgeInsets.zero,
-            children: [
-              /* const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
+        drawer: SafeArea(
+          child: Drawer(
+            child: ListView(
+              // padding: EdgeInsets.zero,
+              children: [
+                /* const DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: Text('Drawer Header'),
+                ),*/
+                ListTile(
+                  title: const Text('Estadísticas'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                 ),
-                child: Text('Drawer Header'),
-              ),*/
-              ListTile(
-                title: const Text('Estadísticas'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('Item 2'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+                ListTile(
+                  title: const Text('Item 2'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         appBar: AppBar(
@@ -62,10 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
           centerTitle: true,
           elevation: 2,
           bottom: const TabBar(
-            unselectedLabelColor: Color(0xFF8EC552),
-            indicatorColor: Color(0xFF8EC552),
-            labelColor: Color(0xFF8EC552),
-            labelStyle: TextStyle(fontSize: 11.5),
+            labelStyle: TextStyle(fontSize: 12),
             tabs: [
               Tab(text: "Todos"),
               Tab(text: "Faltantes"),
@@ -76,13 +77,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: TabBarView(
           children: <Widget>[
-            Center(
-              //TODO ListView to GridView
-              child: ListView.builder(
-                itemCount: 256,
-                itemBuilder: (context, index) {
-                  return Container();
-                },
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+              child: GridView.builder(
+                itemCount: listSticker.length,
+                itemBuilder: (context, index) => Stack(
+                  children: [
+                    Align(alignment: Alignment.center, child: Text(listSticker[index].number.toString())),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(listSticker[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
+                    )
+                  ],
+                ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
               ),
             ),
             const Center(

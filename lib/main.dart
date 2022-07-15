@@ -84,10 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) => Stack(
                   children: [
                     Align(alignment: Alignment.center, child: Text(listSticker[index].number.toString())),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Text(listSticker[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
-                    )
+                    if (listSticker[index].repeated > 0)
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Text(listSticker[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
+                      )
                   ],
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),

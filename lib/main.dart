@@ -1,7 +1,14 @@
 import 'package:album_control/model/sticker_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'model/data.dart';
+
+List<Sticker> listSticker = List<Sticker>.generate(801, (int index) => Sticker.params(index, '', 'A', 0));
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Data().getData();
   runApp(const MyApp());
 }
 
@@ -15,22 +22,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: ChangeNotifierProvider(create: (_) => Sticker(), child: const MyHomePage()),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
   Widget build(BuildContext context) {
-    List<Sticker> listSticker = List<Sticker>.generate(801, (int index) => Sticker.params(index, '', 'A', 0));
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -77,31 +78,102 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: TabBarView(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
-              child: GridView.builder(
-                itemCount: listSticker.length,
-                itemBuilder: (context, index) => Stack(
-                  children: [
-                    Align(alignment: Alignment.center, child: Text(listSticker[index].number.toString())),
-                    if (listSticker[index].repeated > 0)
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(listSticker[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
-                      )
-                  ],
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-              ),
+            Consumer<Sticker>(
+              builder: (_, provider, __) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                  child: GridView.builder(
+                    itemCount: listSticker.length,
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () => provider.updateQuantity(listSticker[index]),
+                      child: Stack(
+                        children: [
+                          Align(alignment: Alignment.center, child: Text(listSticker[index].number.toString())),
+                          if (listSticker[index].repeated > 0)
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(listSticker[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
+                            )
+                        ],
+                      ),
+                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                  ),
+                );
+              },
             ),
-            const Center(
-              child: Text('Faltantes'),
+            Consumer<Sticker>(
+              builder: (_, provider, __) {
+                List<Sticker> listMissing = [...listSticker];
+                listMissing.removeWhere((element) => element.repeated != 0);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                  child: GridView.builder(
+                    itemCount: listMissing.length,
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () => provider.updateQuantity(listSticker[index]),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(listMissing[index].number.toString()),
+                      ),
+                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                  ),
+                );
+              },
             ),
-            const Center(
-              child: Text('Repetidos'),
+            Consumer<Sticker>(
+              builder: (_, provider, __) {
+                List<Sticker> listRepeated = [...listSticker];
+                listRepeated.removeWhere((element) => element.repeated < 2);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                  child: GridView.builder(
+                    itemCount: listRepeated.length,
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () => provider.updateQuantity(listSticker[index]),
+                      child: Stack(
+                        children: [
+                          Align(alignment: Alignment.center, child: Text(listRepeated[index].number.toString())),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Text(listRepeated[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
+                          )
+                        ],
+                      ),
+                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                  ),
+                );
+              },
             ),
-            const Center(
-              child: Text('Equipos'),
+            Consumer<Sticker>(
+              builder: (_, provider, __) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                  child: Column(
+                    children: [
+                      GridView.builder(
+                        itemCount: listSticker.length,
+                        itemBuilder: (context, index) => InkWell(
+                          onTap: () => provider.updateQuantity(listSticker[index]),
+                          child: Stack(
+                            children: [
+                              Align(alignment: Alignment.center, child: Text(listSticker[index].number.toString())),
+                              if (listSticker[index].repeated > 0)
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Text(listSticker[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
+                                )
+                            ],
+                          ),
+                        ),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),

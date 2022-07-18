@@ -9,4 +9,9 @@ class Sticker with ChangeNotifier {
   Sticker.params(this.number, this.team, this.group, this.repeated);
 
   Sticker();
+
+  void updateQuantity(Sticker sticker) {
+    sticker.repeated += 1;
+    notifyListeners();
+  }
 }

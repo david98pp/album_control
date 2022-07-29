@@ -1,15 +1,13 @@
+import 'package:album_control/model/album_data.dart';
 import 'package:album_control/model/sticker_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'model/data.dart';
-
-List<Sticker> listSticker = List<Sticker>.generate(801, (int index) => Sticker.params(index, '', 'A', 0));
+List<StickerModel> listSticker = List<StickerModel>.generate(801, (int index) => StickerModel.params(index, '', 'A', 0));
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Data().getData();
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => AlbumData(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider(create: (_) => Sticker(), child: const MyHomePage()),
+      home: ChangeNotifierProvider(create: (_) => StickerModel(), child: const MyHomePage()),
     );
   }
 }
@@ -33,12 +31,11 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         drawer: SafeArea(
           child: Drawer(
             child: ListView(
-              // padding: EdgeInsets.zero,
               children: [
                 /* const DrawerHeader(
                   decoration: BoxDecoration(
@@ -48,12 +45,6 @@ class MyHomePage extends StatelessWidget {
                 ),*/
                 ListTile(
                   title: const Text('Estadísticas'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('Item 2'),
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -69,7 +60,7 @@ class MyHomePage extends StatelessWidget {
           bottom: const TabBar(
             labelStyle: TextStyle(fontSize: 12),
             tabs: [
-              Tab(text: "Todos"),
+              //  Tab(text: "Todos"),
               Tab(text: "Faltantes"),
               Tab(text: "Repetidos"),
               Tab(text: "Equipos"),
@@ -78,7 +69,7 @@ class MyHomePage extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
-            Consumer<Sticker>(
+            /* Consumer<Sticker>(
               builder: (_, provider, __) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
@@ -101,10 +92,10 @@ class MyHomePage extends StatelessWidget {
                   ),
                 );
               },
-            ),
-            Consumer<Sticker>(
+            ), */
+            Consumer<StickerModel>(
               builder: (_, provider, __) {
-                List<Sticker> listMissing = [...listSticker];
+                List<StickerModel> listMissing = [...listSticker];
                 listMissing.removeWhere((element) => element.repeated != 0);
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
@@ -122,9 +113,9 @@ class MyHomePage extends StatelessWidget {
                 );
               },
             ),
-            Consumer<Sticker>(
+            Consumer<StickerModel>(
               builder: (_, provider, __) {
-                List<Sticker> listRepeated = [...listSticker];
+                List<StickerModel> listRepeated = [...listSticker];
                 listRepeated.removeWhere((element) => element.repeated < 2);
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
@@ -147,7 +138,7 @@ class MyHomePage extends StatelessWidget {
                 );
               },
             ),
-            Consumer<Sticker>(
+            Consumer<StickerModel>(
               builder: (_, provider, __) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),

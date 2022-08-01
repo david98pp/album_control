@@ -1,231 +1,242 @@
-import 'package:flutter/material.dart';
-
-import '../storage/db_repository.dart';
-
-class Data with ChangeNotifier {
-  final DBRepository _base = DBRepository();
-
+class Data {
   Map toJson() {
     return {
-      'data': {
-        'Grupo 0': {'name': 'Especiales', 'from': 0, 'to': 9},
+      'version': {'number': 1.1},
+      'groups': {
+        'Grupo 0': {'name': 'Especiales', 'img': '', 'from': 0, 'to': 15},
         'Grupo 1': {
           'name': 'Grupo A',
           'countries': {
-            'Qatar': {
+            '0': {
+              'name': 'Qatar',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 10,
+              'from': 16,
               'to': 35,
             },
-            'Países Bajos': {
+            '1': {
+              'name': 'Países Bajos',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
               'from': 36,
-              'to': 61,
+              'to': 55,
             },
-            'Senegal': {
+            '2': {
+              'name': 'Senegal',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 62,
-              'to': 87,
+              'from': 56,
+              'to': 75,
             },
-            'Ecuador': {
+            '3': {
+              'name': 'Ecuador',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 88,
-              'to': 103,
+              'from': 76,
+              'to': 95,
             },
           }
         },
         'Grupo 2': {
           'name': 'Grupo B',
           'countries': {
-            'Inglaterra': {
+            '0': {
+              'name': 'Inglaterra',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 104,
-              'to': 129,
+              'from': 96,
+              'to': 115,
             },
-            'Estados Unidos': {
+            '1': {
+              'name': 'Estados Unidos',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 130,
+              'from': 116,
+              'to': 135,
+            },
+            '2': {
+              'name': 'Irán',
+              'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
+              'from': 136,
               'to': 155,
             },
-            'Irán': {
+            '3': {
+              'name': 'Gales',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
               'from': 156,
-              'to': 181,
-            },
-            'Gales': {
-              'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 182,
-              'to': 207,
+              'to': 175,
             },
           },
         },
         'Grupo 3': {
           'name': 'Grupo C',
           'countries': {
-            'Argentina': {
+            '0': {
+              'name': 'Argentina',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 208,
-              'to': 233,
+              'from': 176,
+              'to': 195,
             },
-            'México': {
+            '1': {
+              'name': 'México',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 234,
-              'to': 259,
+              'from': 196,
+              'to': 215,
             },
-            'Polonia': {
+            '2': {
+              'name': 'Polonia',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 260,
-              'to': 285,
+              'from': 216,
+              'to': 235,
             },
-            'Arabia Saudita': {
+            '3': {
+              'name': 'Arabia Suidita',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 286,
-              'to': 311,
+              'from': 236,
+              'to': 255,
             },
           },
         },
         'Grupo 4': {
           'name': 'Grupo D',
           'countries': {
-            'Francia': {
+            '0': {
+              'name': 'Francia',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 312,
-              'to': 337,
+              'from': 256,
+              'to': 275,
             },
-            'Dinamarca': {
+            '1': {
+              'name': 'Dinamarca',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 338,
-              'to': 363,
+              'from': 276,
+              'to': 295,
             },
-            'Túnez': {
+            '2': {
+              'name': 'Túnez',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 364,
-              'to': 389,
+              'from': 296,
+              'to': 315,
             },
-            'Australia': {
+            '3': {
+              'name': 'Australia',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 390,
-              'to': 415,
+              'from': 316,
+              'to': 335,
             },
           },
         },
         'Grupo 5': {
           'name': 'Grupo E',
           'countries': {
-            'España': {
+            '0': {
+              'name': 'España',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 416,
-              'to': 431,
+              'from': 336,
+              'to': 355,
             },
-            'Alemania': {
+            '1': {
+              'name': 'Alemania',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 432,
-              'to': 457,
+              'from': 356,
+              'to': 375,
             },
-            'Japón': {
+            '2': {
+              'name': 'Japón',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 458,
-              'to': 483,
+              'from': 376,
+              'to': 395,
             },
-            'Costa Rica': {
+            '3': {
+              'name': 'Costa Rica',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 484,
-              'to': 509,
+              'from': 396,
+              'to': 415,
             },
           },
         },
         'Grupo 6': {
           'name': 'Grupo F',
           'countries': {
-            'Bélgica': {
+            '0': {
+              'name': 'Bélgica',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 510,
-              'to': 535,
+              'from': 416,
+              'to': 435,
             },
-            'Croacia': {
+            '1': {
+              'name': 'Croacia',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 536,
-              'to': 561,
+              'from': 436,
+              'to': 455,
             },
-            'Marruecos': {
+            '2': {
+              'name': 'Marruecos',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 562,
-              'to': 587,
+              'from': 456,
+              'to': 475,
             },
-            'Canadá': {
+            '3': {
+              'name': 'Canadá',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 588,
-              'to': 603,
+              'from': 476,
+              'to': 495,
             },
           },
         },
         'Grupo 7': {
           'name': 'Grupo G',
           'countries': {
-            'Brasil': {
+            '0': {
+              'name': 'Brasil',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 604,
-              'to': 629,
+              'from': 496,
+              'to': 515,
             },
-            'Suiza': {
+            '1': {
+              'name': 'Suiza',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 630,
-              'to': 655,
+              'from': 516,
+              'to': 535,
             },
-            'Serbia': {
+            '2': {
+              'name': 'Serbia',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 656,
-              'to': 681,
+              'from': 536,
+              'to': 555,
             },
-            'Camerún': {
+            '3': {
+              'name': 'Camerún',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 682,
-              'to': 707,
+              'from': 556,
+              'to': 575,
             },
           },
         },
         'Grupo 8': {
           'name': 'Grupo H',
           'countries': {
-            'Portugal': {
+            '0': {
+              'name': 'Portugal',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 708,
-              'to': 733,
+              'from': 576,
+              'to': 595,
             },
-            'Uruguay': {
+            '1': {
+              'name': 'Uruguay',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 734,
-              'to': 759,
+              'from': 596,
+              'to': 615,
             },
-            'Corea del Sur': {
+            '2': {
+              'name': 'Corea del Sur',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 760,
-              'to': 785,
+              'from': 616,
+              'to': 635,
             },
-            'Ghana': {
+            '3': {
+              'name': 'Ghana',
               'img': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Qatar.svg/1200px-Flag_of_Qatar.svg.png',
-              'from': 786,
-              'to': 811,
+              'from': 636,
+              'to': 655,
             },
           },
         },
       },
     };
-  }
-
-  Future<void> getData() async {
-    await Future.delayed(const Duration(seconds: 2));
-    try {
-      var config = await _base.get("configApp");
-      if (config.isEmpty) {
-        _base.set('data', toJson());
-        notifyListeners();
-      } else {
-        await Future.delayed(const Duration(seconds: 5), () => _base.set('data', toJson()));
-        notifyListeners();
-      }
-    } catch (e) {
-      print("Error al preparar app config. " + e.toString());
-    }
   }
 }

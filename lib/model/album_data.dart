@@ -12,6 +12,10 @@ class AlbumData extends ChangeNotifier {
   List<StickerModel> stickerList = [];
   bool loading = true;
 
+  AlbumData() {
+    verifyData();
+  }
+
   Future<void> verifyData() async {
     try {
       var dataBase = await _base.get("groups");
@@ -22,7 +26,10 @@ class AlbumData extends ChangeNotifier {
       } else if (data['version']['number'] != version['number']) {
         await loadInitialData(data);
       }
-      generateStickerList();
+      await initData();
+      await generateStickerList();
+      loading = false;
+      notifyListeners();
     } catch (e) {
       print("Error al preparar app config. $e");
     }
@@ -31,31 +38,47 @@ class AlbumData extends ChangeNotifier {
   Future<void> loadInitialData(Map data) async {
     await _base.set('groups', data['groups']);
     await _base.set('version', data['version']);
-    await initData();
   }
 
   Future<void> initData() async {
     Map data = await _base.get("groups");
     data.forEach((key, value) {
+      List<Country> countryList = [];
       if (key == 'Grupo 0') {
+        countryList.add(Country.fromMap(value));
       } else {
         Map countriesMap = value['countries'];
-        List<Country> countryList = [];
         for (var v in countriesMap.values) {
           countryList.add(Country.fromMap(v));
         }
-        groupList.add(GroupModel(value['name'], countryList));
       }
+      groupList.add(GroupModel(value['name'], countryList));
     });
   }
 
   Future<void> generateStickerList() async {
     Map stickers = await _base.get('stickers');
-    groupList.map((g) => g.countries.map((c) {
-          for (num i in range(c.from, c.to)) {
-            ///TODO grabar la lista de stickers en la base del telefono
-            stickerList.add(StickerModel.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toInt()] : 0));
-          }
-        }));
+    Map duplicated = {};
+    groupList
+        .map((g) => g.countries.map((c) {
+              for (num i in range(c.from, c.to + 1)) {
+                stickerList.add(StickerModel.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                if (stickers.isEmpty) {
+                  duplicated[i.toString()] = 0;
+                }
+              }
+            }).toList())
+        .toList();
+    if (stickers.isEmpty) {
+      await _base.set('stickers', duplicated);
+    }
+  }
+
+  Future<void> saveStickerUpdate(StickerModel sticker) async {
+    Map stickers = await _base.get('stickers');
+    Map duplicated = {};
+    duplicated.addAll(stickers);
+    duplicated[sticker.number.toString()] = sticker.repeated;
+    await _base.set('stickers', duplicated);
   }
 }

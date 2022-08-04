@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Control de stickers mundial 2022',
+      title: 'Control de stickers mundial Qatar 2022',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -66,9 +66,9 @@ class MyHomePage extends StatelessWidget {
                   labelStyle: TextStyle(fontSize: 12),
                   tabs: [
                     //  Tab(text: "Todos"),
+                    Tab(text: "Equipos"),
                     Tab(text: "Faltantes"),
                     Tab(text: "Repetidos"),
-                    Tab(text: "Equipos"),
                   ],
                 ),
         ),
@@ -122,6 +122,10 @@ class MyHomePage extends StatelessWidget {
                                                 sum += 1;
                                                 int i = listGroup[index].countries[j].from;
                                                 return InkWell(
+                                                  onLongPress: () {
+                                                    StickerModel sticker = provider.getSticker(listGroup[index].countries[j], listSticker, indexc);
+                                                    showDialogUpdate(context, sticker);
+                                                  },
                                                   onTap: () async => await provider.updateQuantityTeams(listGroup[index].countries[j], listSticker, indexc),
                                                   child: Stack(
                                                     children: [
@@ -219,6 +223,20 @@ class MyHomePage extends StatelessWidget {
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  void showDialogUpdate(BuildContext context, StickerModel sticker) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Modificar Sticker ${sticker.number.toString()}'),
+        content: Text('Sticker ${sticker.number}', textAlign: TextAlign.center),
+        actions: <Widget>[
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Grabar')),
+        ],
       ),
     );
   }

@@ -20,6 +20,13 @@ class StickerModel with ChangeNotifier {
   }
 
   Future<void> updateQuantityTeams(Country country, List<StickerModel> list, int pos) async {
+    StickerModel sticker = getSticker(country, list, pos);
+    sticker.repeated += 1;
+    await AlbumData().saveStickerUpdate(sticker);
+    notifyListeners();
+  }
+
+  StickerModel getSticker(Country country, List<StickerModel> list, int pos) {
     int j = 0;
     int positionSticker = 0;
     for (num i in range(country.from, country.to + 1)) {
@@ -30,9 +37,6 @@ class StickerModel with ChangeNotifier {
         j++;
       }
     }
-    StickerModel sticker = list[positionSticker];
-    sticker.repeated += 1;
-    await AlbumData().saveStickerUpdate(sticker);
-    notifyListeners();
+    return list[positionSticker];
   }
 }

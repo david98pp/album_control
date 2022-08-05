@@ -1,6 +1,7 @@
 import 'package:album_control/model/album_data.dart';
 import 'package:album_control/model/group_model.dart';
 import 'package:album_control/model/sticker_model.dart';
+import 'package:album_control/provider/groupExpansionProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -92,66 +93,81 @@ class MyHomePage extends StatelessWidget {
               )
             : TabBarView(
                 children: <Widget>[
-                  Consumer<StickerModel>(
-                    builder: (_, provider, __) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            primary: true,
-                            itemCount: listGroup.length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                child: Column(
-                                  children: [
-                                    index != 0 ? Text(listGroup[index].groupName) : Container(),
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      primary: false,
-                                      itemCount: listGroup[index].countries.length,
-                                      itemBuilder: (context, j) {
-                                        sum = -1;
-                                        return Column(
-                                          children: [
-                                            Text(listGroup[index].countries[j].name),
-                                            GridView.builder(
+                  Padding(
+                      padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ...listGroup
+                                .map(
+                                  (group) => ChangeNotifierProvider(
+                                    create: (_) => GroupExpansionProvider(),
+                                    child: Consumer<GroupExpansionProvider>(builder: (_, providerCountry, __) {
+                                      return ExpansionPanelList(
+                                        children: [
+                                          ExpansionPanel(
+                                            headerBuilder: (context, isExpanded) {
+                                              return ListTile(title: Text(group.groupName));
+                                            },
+                                            canTapOnHeader: true,
+                                            isExpanded: providerCountry.isExpanded,
+                                            body: ListView.builder(
                                               shrinkWrap: true,
                                               primary: false,
-                                              itemCount: listGroup[index].countries[j].to - listGroup[index].countries[j].from + 1,
-                                              itemBuilder: (context, indexc) {
-                                                sum += 1;
-                                                int i = listGroup[index].countries[j].from;
-                                                return InkWell(
-                                                  onLongPress: () {
-                                                    StickerModel sticker = provider.getSticker(listGroup[index].countries[j], listSticker, indexc);
-                                                    showDialogUpdate(context, sticker);
-                                                  },
-                                                  onTap: () async => await provider.updateQuantityTeams(listGroup[index].countries[j], listSticker, indexc),
-                                                  child: Stack(
-                                                    children: [
-                                                      Align(alignment: Alignment.center, child: Text(listSticker[i + sum].number.toString())),
-                                                      if (listSticker[i + sum].repeated > 0)
-                                                        Align(
-                                                          alignment: Alignment.bottomRight,
-                                                          child: Text(listSticker[i + sum].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
-                                                        )
-                                                    ],
-                                                  ),
+                                              itemCount: group.countries.length,
+                                              itemBuilder: (context, j) {
+                                                sum = -1;
+                                                return Column(
+                                                  children: [
+                                                    group.groupName != 'Especiales' ? Text(group.countries[j].name) : Container(),
+                                                    GridView.builder(
+                                                      shrinkWrap: true,
+                                                      primary: false,
+                                                      itemCount: group.countries[j].to - group.countries[j].from + 1,
+                                                      itemBuilder: (context, indexc) {
+                                                        sum += 1;
+                                                        int i = group.countries[j].from;
+                                                        return Consumer<StickerModel>(
+                                                          builder: (_, provider, __) {
+                                                            return InkWell(
+                                                              onLongPress: () {
+                                                                StickerModel sticker = provider.getSticker(group.countries[j], listSticker, indexc);
+                                                                showDialogUpdate(context, sticker);
+                                                              },
+                                                              onTap: () async => await provider.updateQuantityTeams(group.countries[j], listSticker, indexc),
+                                                              child: Stack(
+                                                                children: [
+                                                                  Align(alignment: Alignment.center, child: Text(listSticker[i + sum].number.toString())),
+                                                                  if (listSticker[i + sum].repeated > 0)
+                                                                    Align(
+                                                                      alignment: Alignment.bottomRight,
+                                                                      child: Text(listSticker[i + sum].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
+                                                                    )
+                                                                ],
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                                                    ),
+                                                  ],
                                                 );
                                               },
-                                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-                                            )
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                      );
-                    },
-                  ),
+                                            ),
+                                          )
+                                        ],
+                                        expansionCallback: (panelIndex, isExpanded) {
+                                          providerCountry.isExpanded = !isExpanded;
+                                        },
+                                      );
+                                    }),
+                                  ),
+                                )
+                                .toList(),
+                          ],
+                        ),
+                      )),
                   /* Consumer<Sticker>(
               builder: (_, provider, __) {
                 return Padding(

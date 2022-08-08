@@ -119,7 +119,12 @@ class MyHomePage extends StatelessWidget {
                                                 sum = -1;
                                                 return Column(
                                                   children: [
-                                                    group.groupName != 'Especiales' ? Text(group.countries[j].name) : Container(),
+                                                    group.groupName != 'Especiales'
+                                                        ? Text(
+                                                            group.countries[j].name,
+                                                            style: const TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
+                                                          )
+                                                        : Container(),
                                                     GridView.builder(
                                                       shrinkWrap: true,
                                                       primary: false,
@@ -137,7 +142,9 @@ class MyHomePage extends StatelessWidget {
                                                               onTap: () async => await provider.updateQuantityTeams(group.countries[j], listSticker, indexc),
                                                               child: Stack(
                                                                 children: [
-                                                                  Align(alignment: Alignment.center, child: Text(listSticker[i + sum].number.toString())),
+                                                                  Align(
+                                                                      alignment: Alignment.center,
+                                                                      child: Text(listSticker[i + sum].number.toString(), style: const TextStyle(fontSize: 15.0))),
                                                                   if (listSticker[i + sum].repeated > 0)
                                                                     Align(
                                                                       alignment: Alignment.bottomRight,

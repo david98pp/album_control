@@ -17,9 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Control de stickers mundial Qatar 2022',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: ChangeNotifierProvider(create: (_) => StickerModel(), child: const MyHomePage()),
     );
   }
@@ -36,6 +34,7 @@ class MyHomePage extends StatelessWidget {
     var sum = -1;
     return DefaultTabController(
       length: 3,
+      initialIndex: 1,
       child: Scaffold(
         drawer: SafeArea(
           child: Drawer(
@@ -49,9 +48,7 @@ class MyHomePage extends StatelessWidget {
                 ),*/
                 ListTile(
                   title: const Text('Estadísticas'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => Navigator.pop(context),
                 ),
               ],
             ),
@@ -209,6 +206,7 @@ class MyHomePage extends StatelessWidget {
                           itemCount: listMissing.length,
                           itemBuilder: (context, index) => InkWell(
                             onTap: () async => await provider.updateQuantity(listSticker[index]),
+                            onLongPress: () => showDialogUpdate(context, listSticker[index]),
                             child: Align(
                               alignment: Alignment.center,
                               child: Text(listMissing[index].number.toString()),
@@ -229,6 +227,7 @@ class MyHomePage extends StatelessWidget {
                           itemCount: listRepeated.length,
                           itemBuilder: (context, index) => InkWell(
                             onTap: () async => await provider.updateQuantity(listSticker[index]),
+                            onLongPress: () => showDialogUpdate(context, listSticker[index]),
                             child: Stack(
                               children: [
                                 Align(alignment: Alignment.center, child: Text(listRepeated[index].number.toString())),

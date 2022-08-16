@@ -1,15 +1,16 @@
-import 'package:album_control/model/country.dart';
-import 'package:album_control/model/data.dart';
+import 'package:album_control/data/data.dart';
+import 'package:album_control/model/country_model.dart';
 import 'package:album_control/model/group_model.dart';
 import 'package:album_control/model/sticker_model.dart';
 import 'package:flutter/material.dart';
-import '../storage/db_repository.dart';
 import 'package:quiver/iterables.dart';
+
+import '../storage/db_repository.dart';
 
 class AlbumData extends ChangeNotifier {
   final DBRepository _base = DBRepository();
-  List<GroupModel> groupList = [];
-  List<StickerModel> stickerList = [];
+  List<Group> groupList = [];
+  List<Sticker> stickerList = [];
   bool loading = true;
 
   AlbumData() {
@@ -52,7 +53,7 @@ class AlbumData extends ChangeNotifier {
           countryList.add(Country.fromMap(v));
         }
       }
-      groupList.add(GroupModel(value['name'], countryList));
+      groupList.add(Group(value['name'], countryList));
     });
   }
 
@@ -62,7 +63,7 @@ class AlbumData extends ChangeNotifier {
     groupList
         .map((g) => g.countries.map((c) {
               for (num i in range(c.from, c.to + 1)) {
-                stickerList.add(StickerModel.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                stickerList.add(Sticker.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
                 if (stickers.isEmpty) {
                   duplicated[i.toString()] = 0;
                 }
@@ -74,7 +75,7 @@ class AlbumData extends ChangeNotifier {
     }
   }
 
-  Future<void> saveStickerUpdate(StickerModel sticker) async {
+  Future<void> saveStickerUpdate(Sticker sticker) async {
     Map stickers = await _base.get('stickers');
     Map duplicated = {};
     duplicated.addAll(stickers);

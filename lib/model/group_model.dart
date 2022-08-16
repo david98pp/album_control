@@ -1,7 +1,7 @@
-import 'package:album_control/model/country.dart';
+import 'package:album_control/model/country_model.dart';
 
-class GroupModel {
+class Group {
   late String groupName;
   late List<Country> countries;
-  GroupModel(this.groupName, this.countries);
+  Group(this.groupName, this.countries);
 }

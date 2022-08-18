@@ -4,6 +4,8 @@ import 'package:album_control/model/group_model.dart';
 import 'package:album_control/model/sticker_model.dart';
 import 'package:album_control/provider/group_expansion_provider.dart';
 import 'package:album_control/provider/sticker_provider.dart';
+import 'package:album_control/ui/modals/dialog_about.dart';
+import 'package:album_control/ui/modals/dialog_statistics.dart';
 import 'package:album_control/ui/modals/dialog_update.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,31 +19,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  static Color getShade(Color color, {bool darker = false, double value = .1}) {
-    assert(value >= 0 && value <= 1);
-
-    final hsl = HSLColor.fromColor(color);
-    final hslDark = hsl.withLightness((darker ? (hsl.lightness - value) : (hsl.lightness + value)).clamp(0.0, 1.0));
-
-    return hslDark.toColor();
-  }
-
-  static MaterialColor getMaterialColorFromColor(Color color) {
-    Map<int, Color> colorShades = {
-      50: getShade(color, value: 0.5),
-      100: getShade(color, value: 0.4),
-      200: getShade(color, value: 0.3),
-      300: getShade(color, value: 0.2),
-      400: getShade(color, value: 0.1),
-      500: color,
-      600: getShade(color, value: 0.1, darker: true),
-      700: getShade(color, value: 0.15, darker: true),
-      800: getShade(color, value: 0.2, darker: true),
-      900: getShade(color, value: 0.25, darker: true),
-    };
-    return MaterialColor(color.value, colorShades);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +57,7 @@ class MyHomePage extends StatelessWidget {
                       Expanded(child: Image.asset("assets/images/header.jpeg", fit: BoxFit.contain)),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(diffInDays(), style: const TextStyle(color: Colors.white)),
+                        child: Text(diffInDays(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 12)),
                       ),
                     ],
                   ),
@@ -88,12 +65,12 @@ class MyHomePage extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.data_saver_off_rounded),
                   title: const Text('Estadísticas'),
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => showDialogStatistics(context, listSticker),
                 ),
                 ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
                   title: const Text('Acerca de'),
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => showDialogAbout(context),
                 ),
                 ListTile(
                   leading: const Icon(Icons.close),
@@ -323,4 +300,29 @@ class MyHomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+Color getShade(Color color, {bool darker = false, double value = .1}) {
+  assert(value >= 0 && value <= 1);
+
+  final hsl = HSLColor.fromColor(color);
+  final hslDark = hsl.withLightness((darker ? (hsl.lightness - value) : (hsl.lightness + value)).clamp(0.0, 1.0));
+
+  return hslDark.toColor();
+}
+
+MaterialColor getMaterialColorFromColor(Color color) {
+  Map<int, Color> colorShades = {
+    50: getShade(color, value: 0.5),
+    100: getShade(color, value: 0.4),
+    200: getShade(color, value: 0.3),
+    300: getShade(color, value: 0.2),
+    400: getShade(color, value: 0.1),
+    500: color,
+    600: getShade(color, value: 0.1, darker: true),
+    700: getShade(color, value: 0.15, darker: true),
+    800: getShade(color, value: 0.2, darker: true),
+    900: getShade(color, value: 0.25, darker: true),
+  };
+  return MaterialColor(color.value, colorShades);
 }

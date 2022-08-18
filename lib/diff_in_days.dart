@@ -3,13 +3,16 @@ String diffInDays() {
   var currentDate = DateTime.now();
   var different = currentDate.difference(dateOfWorldCup).inDays;
   if (different <= 0) {
-    int absValue = different.abs();
+    int absValue = different.abs() + 1;
     if (absValue >= 2) {
-      return 'Faltan ${absValue.toString()} días para el mundial';
+      return 'Faltan solo ${absValue.toString()} días para el mundial';
     } else if (absValue == 1) {
-      return 'Mañana es el incio de la Copa del Mundo';
-    } else if (absValue == 0) {
-      return 'Hoy incio de la Copa del Mundo';
+      absValue = currentDate.difference(dateOfWorldCup).inHours;
+      if (absValue < 0) {
+        return '¡Mañana es el incio de la Copa del Mundo!';
+      } else {
+        return '¡Hoy es el incio de la Copa del Mundo!';
+      }
     }
   }
   return '';

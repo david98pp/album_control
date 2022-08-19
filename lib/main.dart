@@ -1,5 +1,4 @@
 import 'package:album_control/data/album_data.dart';
-import 'package:album_control/diff_in_days.dart';
 import 'package:album_control/model/group_model.dart';
 import 'package:album_control/model/sticker_model.dart';
 import 'package:album_control/provider/group_expansion_provider.dart';
@@ -7,13 +6,17 @@ import 'package:album_control/provider/sticker_provider.dart';
 import 'package:album_control/ui/modals/dialog_about.dart';
 import 'package:album_control/ui/modals/dialog_statistics.dart';
 import 'package:album_control/ui/modals/dialog_update.dart';
+import 'package:album_control/ui/widgets/banner_ad_widget.dart';
+import 'package:album_control/utils/diff_in_days.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 late StickerProvider _providerSticker;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   runApp(ChangeNotifierProvider(create: (_) => AlbumData(), child: const MyApp()));
 }
 
@@ -25,13 +28,43 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Control de stickers Mundial Qatar 2022',
       theme: ThemeData(primarySwatch: getMaterialColorFromColor(const Color.fromARGB(255, 110, 18, 52))),
-      home: ChangeNotifierProvider(create: (_) => StickerProvider(), child: const MyHomePage()),
+      home: const TabsHome(),
     );
   }
 }
 
+class TabsHome extends StatefulWidget {
+  const TabsHome({Key? key}) : super(key: key);
+
+  @override
+  State<TabsHome> createState() => _TabsHomeState();
+}
+
+class _TabsHomeState extends State<TabsHome> with SingleTickerProviderStateMixin {
+  late TabController _controller;
+
+  @override
+  void initState() {
+    _controller = TabController(vsync: this, length: 3, initialIndex: 1);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(create: (_) => StickerProvider(), child: MyHomePage(_controller));
+  }
+}
+
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final TabController controller;
+
+  const MyHomePage(this.controller, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +120,10 @@ class MyHomePage extends StatelessWidget {
           elevation: 2,
           bottom: providerAlbum.loading
               ? null
-              : const TabBar(
-                  labelStyle: TextStyle(fontSize: 12),
-                  tabs: [
+              : TabBar(
+                  controller: controller,
+                  labelStyle: const TextStyle(fontSize: 12),
+                  tabs: const [
                     //  Tab(text: "Todos"),
                     Tab(text: "Equipos"),
                     Tab(text: "Faltantes"),
@@ -114,100 +148,108 @@ class MyHomePage extends StatelessWidget {
                 ),
               )
             : TabBarView(
+                controller: controller,
                 children: <Widget>[
                   Container(
                     color: const Color.fromARGB(255, 110, 18, 52),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            ...listGroup
-                                .map(
-                                  (group) => ChangeNotifierProvider(
-                                    create: (_) => GroupExpansionProvider(),
-                                    child: Consumer<GroupExpansionProvider>(builder: (_, providerCountry, __) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ExpansionPanelList(
-                                          children: [
-                                            ExpansionPanel(
-                                              headerBuilder: (context, isExpanded) {
-                                                return ListTile(title: Text(group.groupName, style: const TextStyle(fontSize: 20)));
-                                              },
-                                              canTapOnHeader: true,
-                                              isExpanded: providerCountry.isExpanded,
-                                              body: ListView.builder(
-                                                shrinkWrap: true,
-                                                primary: false,
-                                                itemCount: group.countries.length,
-                                                itemBuilder: (context, j) {
-                                                  sum = -1;
-                                                  return Column(
-                                                    children: [
-                                                      group.groupName != 'Especiales'
-                                                          ? Text(
-                                                              group.countries[j].name,
-                                                              style: const TextStyle(fontSize: 19.0, fontWeight: FontWeight.bold),
-                                                            )
-                                                          : Container(),
-                                                      GridView.builder(
-                                                        shrinkWrap: true,
-                                                        primary: false,
-                                                        itemCount: group.countries[j].to - group.countries[j].from + 1,
-                                                        itemBuilder: (context, indexc) {
-                                                          sum += 1;
-                                                          int i = group.countries[j].from;
-                                                          return Consumer<StickerProvider>(
-                                                            builder: (_, provider, __) {
-                                                              return InkWell(
-                                                                onLongPress: () {
-                                                                  Sticker sticker = provider.getSticker(group.countries[j], listSticker, indexc);
-                                                                  showDialogUpdate(context, sticker, _providerSticker);
-                                                                },
-                                                                onTap: () async => await provider.updateQuantityTeams(group.countries[j], listSticker, indexc),
-                                                                child: Stack(
-                                                                  children: [
-                                                                    Align(
-                                                                      child: Text(
-                                                                        listSticker[i + sum].number.toString(),
-                                                                        style: const TextStyle(fontSize: 18.0, color: Color.fromARGB(255, 110, 18, 52)),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              child: Column(
+                                children: [
+                                  ...listGroup
+                                      .map(
+                                        (group) => ChangeNotifierProvider(
+                                          create: (_) => GroupExpansionProvider(),
+                                          child: Consumer<GroupExpansionProvider>(builder: (_, providerCountry, __) {
+                                            return Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: ExpansionPanelList(
+                                                children: [
+                                                  ExpansionPanel(
+                                                    headerBuilder: (context, isExpanded) {
+                                                      return ListTile(title: Text(group.groupName, style: const TextStyle(fontSize: 20)));
+                                                    },
+                                                    canTapOnHeader: true,
+                                                    isExpanded: providerCountry.isExpanded,
+                                                    body: ListView.builder(
+                                                      shrinkWrap: true,
+                                                      primary: false,
+                                                      itemCount: group.countries.length,
+                                                      itemBuilder: (context, j) {
+                                                        sum = -1;
+                                                        return Column(
+                                                          children: [
+                                                            group.groupName != 'Especiales'
+                                                                ? Text(
+                                                                    group.countries[j].name,
+                                                                    style: const TextStyle(fontSize: 19.0, fontWeight: FontWeight.bold),
+                                                                  )
+                                                                : Container(),
+                                                            GridView.builder(
+                                                              shrinkWrap: true,
+                                                              primary: false,
+                                                              itemCount: group.countries[j].to - group.countries[j].from + 1,
+                                                              itemBuilder: (context, indexc) {
+                                                                sum += 1;
+                                                                int i = group.countries[j].from;
+                                                                return Consumer<StickerProvider>(
+                                                                  builder: (_, provider, __) {
+                                                                    return InkWell(
+                                                                      onLongPress: () {
+                                                                        Sticker sticker = provider.getSticker(group.countries[j], listSticker, indexc);
+                                                                        showDialogUpdate(context, sticker, _providerSticker);
+                                                                      },
+                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j], listSticker, indexc),
+                                                                      child: Stack(
+                                                                        children: [
+                                                                          Align(
+                                                                            child: Text(
+                                                                              listSticker[i + sum].number.toString(),
+                                                                              style: const TextStyle(fontSize: 18.0, color: Color.fromARGB(255, 110, 18, 52)),
+                                                                            ),
+                                                                          ),
+                                                                          if (listSticker[i + sum].repeated > 0)
+                                                                            Align(
+                                                                              alignment: Alignment.bottomRight,
+                                                                              child: Text(
+                                                                                listSticker[i + sum].repeated.toString(),
+                                                                                style: const TextStyle(fontSize: 13.0, color: Color.fromARGB(255, 110, 18, 52)),
+                                                                              ),
+                                                                            )
+                                                                        ],
                                                                       ),
-                                                                    ),
-                                                                    if (listSticker[i + sum].repeated > 0)
-                                                                      Align(
-                                                                        alignment: Alignment.bottomRight,
-                                                                        child: Text(
-                                                                          listSticker[i + sum].repeated.toString(),
-                                                                          style: const TextStyle(fontSize: 13.0, color: Color.fromARGB(255, 110, 18, 52)),
-                                                                        ),
-                                                                      )
-                                                                  ],
-                                                                ),
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-                                                      ),
-                                                    ],
-                                                  );
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    ),
+                                                  )
+                                                ],
+                                                expansionCallback: (panelIndex, isExpanded) {
+                                                  providerCountry.isExpanded = !isExpanded;
                                                 },
                                               ),
-                                            )
-                                          ],
-                                          expansionCallback: (panelIndex, isExpanded) {
-                                            providerCountry.isExpanded = !isExpanded;
-                                          },
+                                            );
+                                          }),
                                         ),
-                                      );
-                                    }),
-                                  ),
-                                )
-                                .toList(),
-                          ],
-                        ),
+                                      )
+                                      .toList(),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const BannerAdWidget(),
+                        ],
                       ),
                     ),
                   ),
@@ -239,33 +281,40 @@ class MyHomePage extends StatelessWidget {
                     builder: (_, provider, __) {
                       List<Sticker> listMissing = [...listSticker];
                       listMissing.removeWhere((element) => element.repeated != 0);
-                      return GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-                        itemCount: listMissing.length,
-                        itemBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            radius: 100,
-                            onTap: () async => await provider.updateQuantity(listMissing[index]),
-                            onLongPress: () => showDialogUpdate(context, listMissing[index], _providerSticker),
-                            child: Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 154, 16, 66),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  listMissing[index].number.toString(),
-                                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: GridView.builder(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                              itemCount: listMissing.length,
+                              itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(100),
+                                  radius: 100,
+                                  onTap: () async => await provider.updateQuantity(listMissing[index]),
+                                  onLongPress: () => showDialogUpdate(context, listMissing[index], _providerSticker),
+                                  child: Container(
+                                    height: 100,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 154, 16, 66),
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        listMissing[index].number.toString(),
+                                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                          const BannerAdWidget(),
+                        ],
                       );
                     },
                   ),
@@ -273,25 +322,53 @@ class MyHomePage extends StatelessWidget {
                     builder: (_, provider, __) {
                       List<Sticker> listRepeated = [...listSticker];
                       listRepeated.removeWhere((element) => element.repeated < 2);
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
-                        child: GridView.builder(
-                          itemCount: listRepeated.length,
-                          itemBuilder: (context, index) => InkWell(
-                            onTap: () async => await provider.updateQuantity(listRepeated[index]),
-                            onLongPress: () => showDialogUpdate(context, listRepeated[index], _providerSticker),
-                            child: Stack(
-                              children: [
-                                Align(alignment: Alignment.center, child: Text(listRepeated[index].number.toString())),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Text(listRepeated[index].repeated.toString(), style: const TextStyle(fontSize: 12.0)),
-                                )
-                              ],
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: GridView.builder(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                              itemCount: listRepeated.length,
+                              itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(100),
+                                  radius: 100,
+                                  onTap: () async => await provider.updateQuantity(listRepeated[index]),
+                                  onLongPress: () => showDialogUpdate(context, listRepeated[index], _providerSticker),
+                                  child: Container(
+                                    height: 100,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 154, 16, 66),
+                                      borderRadius: BorderRadius.circular(150),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            listRepeated[index].number.toString(),
+                                            style: const TextStyle(color: Colors.white, fontSize: 18),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.bottomRight,
+                                          widthFactor: 7,
+                                          heightFactor: 4,
+                                          child: Text(
+                                            listRepeated[index].repeated.toString(),
+                                            style: const TextStyle(color: Colors.white, fontSize: 13),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-                        ),
+                          const BannerAdWidget(),
+                        ],
                       );
                     },
                   ),

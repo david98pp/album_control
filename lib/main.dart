@@ -4,6 +4,7 @@ import 'package:album_control/model/sticker_model.dart';
 import 'package:album_control/provider/group_expansion_provider.dart';
 import 'package:album_control/provider/sticker_provider.dart';
 import 'package:album_control/ui/modals/dialog_about.dart';
+import 'package:album_control/ui/modals/dialog_instructions.dart';
 import 'package:album_control/ui/modals/dialog_statistics.dart';
 import 'package:album_control/ui/modals/dialog_update.dart';
 import 'package:album_control/ui/widgets/banner_ad_widget.dart';
@@ -73,6 +74,9 @@ class MyHomePage extends StatelessWidget {
     List<Sticker> listSticker = providerAlbum.stickerList;
     List<Group> listGroup = providerAlbum.groupList;
     var sum = -1;
+    if (!providerAlbum.loading) {
+      showDialogInstructions(context);
+    }
     return DefaultTabController(
       length: 3,
       initialIndex: 1,

@@ -23,9 +23,9 @@ class AlbumData extends ChangeNotifier {
       var version = await _base.get("version");
       var data = Data().toJson();
       if (dataBase.isEmpty || version.isEmpty) {
-        await loadInitialData(data);
+        await loadInitialData(data, true);
       } else if (data['version']['number'] != version['number']) {
-        await loadInitialData(data);
+        await loadInitialData(data, false);
       }
       await initData();
       await generateStickerList();
@@ -36,9 +36,10 @@ class AlbumData extends ChangeNotifier {
     }
   }
 
-  Future<void> loadInitialData(Map data) async {
+  Future<void> loadInitialData(Map data, bool isFirstTime) async {
     await _base.set('groups', data['groups']);
     await _base.set('version', data['version']);
+    await _base.set('init', {'firstTime': isFirstTime});
   }
 
   Future<void> initData() async {

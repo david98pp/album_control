@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../model/sticker_model.dart';
 
-void showDialogUpdate(BuildContext context, Sticker sticker, StickerProvider providerSticker) {
+void showDialogUpdate(BuildContext context, int text, Sticker sticker, StickerProvider providerSticker) {
   TextEditingController controller = TextEditingController(text: sticker.repeated.toString());
 
   String? numberValidator(String? value) {
@@ -21,7 +21,7 @@ void showDialogUpdate(BuildContext context, Sticker sticker, StickerProvider pro
   showDialog(
     context: context,
     builder: (_) => AlertDialog(
-      title: Text('Modificar Sticker ${sticker.number.toString()}'),
+      title: Text('Modificar Sticker ${text.toString()} de ${sticker.team}'),
       content: Form(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

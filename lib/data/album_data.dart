@@ -11,6 +11,10 @@ class AlbumData extends ChangeNotifier {
   final DBRepository _base = DBRepository();
   List<Group> groupList = [];
   List<Sticker> stickerList = [];
+  List<Group> groupRepeatedList = [];
+  List<Sticker> stickerRepeatedList = [];
+  List<Group> groupMissingList = [];
+  List<Sticker> stickerMissingList = [];
   bool loading = true;
 
   AlbumData() {
@@ -63,17 +67,58 @@ class AlbumData extends ChangeNotifier {
     Map duplicated = {};
     groupList
         .map((g) => g.countries.map((c) {
+              List<Sticker> _stickerListCopy = [];
               for (num i in range(c.from, c.to + 1)) {
                 stickerList.add(Sticker.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                _stickerListCopy.add(Sticker.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
                 if (stickers.isEmpty) {
                   duplicated[i.toString()] = 0;
                 }
               }
+              c.stickerList = _stickerListCopy;
             }).toList())
         .toList();
     if (stickers.isEmpty) {
       await _base.set('stickers', duplicated);
     }
+
+    final List<Sticker> _stickerListCopy = [...stickerList];
+    stickerMissingList = _stickerListCopy;
+    stickerMissingList.removeWhere((element) => element.repeated != 0);
+    final List<Group> _copyGroupList = [...groupList];
+    groupMissingList = _copyGroupList;
+    groupMissingList.removeWhere((element) {
+      var res = false;
+      element.countries.removeWhere((e) {
+        e.stickerList.removeWhere((el) {
+          res = e.stickerList.every((elem) => elem.repeated != 0);
+          return res;
+        });
+        return res;
+      });
+      return res;
+    });
+
+    final List<Sticker> _stickerListCopyRepeated = [...stickerList];
+    stickerRepeatedList = _stickerListCopyRepeated;
+    stickerRepeatedList.removeWhere((element) => element.repeated < 2);
+    final List<Group> _copyGroupListR = [...groupList];
+
+    ///TODO ver la lista de repetidos
+    groupRepeatedList = _copyGroupListR;
+    groupRepeatedList.removeWhere((element) {
+      var res = false;
+      element.countries.removeWhere((e) {
+        e.stickerList.removeWhere((el) {
+          res = e.stickerList.every((elem) => elem.repeated < 2);
+          e.stickerList.removeWhere((element1) => element1.repeated < 2);
+          return res;
+        });
+        return res;
+      });
+      return res;
+    });
+    groupRepeatedList;
   }
 
   Future<void> saveStickerUpdate(Sticker sticker) async {

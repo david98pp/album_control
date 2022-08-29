@@ -1,10 +1,11 @@
+import 'package:album_control/model/sticker_model.dart';
+
 class Country {
   String name;
   String img;
   int from;
   int to;
-
-  Country(this.name, this.img, this.from, this.to);
+  List<Sticker> stickerList = [];
 
   Country.fromMap(Map data)
       : name = data['name'],

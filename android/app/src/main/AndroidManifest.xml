@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.soy.david.dev.album_control">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="Control de stickers de Qatar 2022"
+        android:label="Control de stickers Qatar 2022"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

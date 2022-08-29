@@ -17,10 +17,10 @@ Future<void> showDialogInstructions(BuildContext context) async {
             children: [
               Image.asset("assets/gifs/demo.gif", fit: BoxFit.contain),
               const Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.only(top: 20.0),
                 child: Text(
-                  'Cada vez que presiones en un sticker se aumentará su valor, si quieres editarlo solamente mantén presionaado en el sticker que quieras modificar',
-                  style: TextStyle(color: Colors.black, fontSize: 12),
+                  'Cada vez que presiones en un sticker incrementará su cantidad, si quieres editarlo solamente mantén presionado el sticker que quieras modificar',
+                  style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
             ],

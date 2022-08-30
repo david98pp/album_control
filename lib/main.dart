@@ -43,11 +43,8 @@ class MyHomePage extends StatelessWidget {
     _providerSticker = context.watch<StickerProvider>();
     List<Sticker> listSticker = providerAlbum.stickerList;
     List<Group> listGroup = providerAlbum.groupList;
-    List<Sticker> listStickerMissing = providerAlbum.stickerMissingList;
     List<Group> listGroupMissing = providerAlbum.groupMissingList;
-    List<Sticker> listStickerRepeated = providerAlbum.stickerRepeatedList;
     List<Group> listGroupRepeated = providerAlbum.groupRepeatedList;
-    var sum = -1;
 
     if (!providerAlbum.loading) {
       showDialogInstructions(context);
@@ -158,7 +155,6 @@ class MyHomePage extends StatelessWidget {
                                                       primary: false,
                                                       itemCount: group.countries.length,
                                                       itemBuilder: (context, j) {
-                                                        sum = group.groupName != 'Especiales' ? 0 : -1;
                                                         return Column(
                                                           children: [
                                                             group.groupName != 'Especiales'
@@ -170,34 +166,29 @@ class MyHomePage extends StatelessWidget {
                                                             GridView.builder(
                                                               shrinkWrap: true,
                                                               primary: false,
-                                                              itemCount: group.countries[j].to - group.countries[j].from + (group.groupName != 'Especiales' ? 0 : 1),
-                                                              itemBuilder: (context, indexc) {
-                                                                sum += 1;
-                                                                int i = group.countries[j].from;
+                                                              itemCount: group.countries[j].stickerList.length,
+                                                              itemBuilder: (context, index) {
+                                                                Sticker sticker = group.countries[j].stickerList[index];
                                                                 return Consumer<StickerProvider>(
                                                                   builder: (_, provider, __) {
                                                                     return InkWell(
                                                                       onLongPress: () {
-                                                                        Sticker sticker = provider.getSticker(
-                                                                            group.countries[j], listSticker, group.groupName != 'Especiales' ? indexc + 1 : indexc);
-                                                                        showDialogUpdate(
-                                                                            context, group.groupName != 'Especiales' ? indexc + 1 : indexc, sticker, _providerSticker);
+                                                                        showDialogUpdate(context, sticker, _providerSticker);
                                                                       },
-                                                                      onTap: () async => await provider.updateQuantityTeams(
-                                                                          group.countries[j], listSticker, group.groupName != 'Especiales' ? indexc + 1 : indexc),
+                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j].stickerList[index]),
                                                                       child: Stack(
                                                                         children: [
                                                                           Align(
                                                                             child: Text(
-                                                                              sum.toString(),
+                                                                              sticker.text,
                                                                               style: const TextStyle(fontSize: 18.0, color: Color.fromARGB(255, 110, 18, 52)),
                                                                             ),
                                                                           ),
-                                                                          if (listSticker[i + sum].repeated > 0)
+                                                                          if (sticker.repeated > 0)
                                                                             Align(
                                                                               alignment: Alignment.bottomRight,
                                                                               child: Text(
-                                                                                listSticker[i + sum].repeated.toString(),
+                                                                                sticker.repeated.toString(),
                                                                                 style: const TextStyle(fontSize: 13.0, color: Color.fromARGB(255, 110, 18, 52)),
                                                                               ),
                                                                             )
@@ -264,7 +255,6 @@ class MyHomePage extends StatelessWidget {
                                                       primary: false,
                                                       itemCount: group.countries.length,
                                                       itemBuilder: (context, j) {
-                                                        sum = group.groupName != 'Especiales' ? 0 : -1;
                                                         return Column(
                                                           children: [
                                                             group.groupName != 'Especiales'
@@ -276,25 +266,19 @@ class MyHomePage extends StatelessWidget {
                                                             GridView.builder(
                                                               shrinkWrap: true,
                                                               primary: false,
-                                                              itemCount: group.countries[j].to - group.countries[j].from + (group.groupName != 'Especiales' ? 0 : 1),
-                                                              itemBuilder: (context, indexc) {
-                                                                sum += 1;
-                                                                int i = group.countries[j].from;
+                                                              itemCount: group.countries[j].stickerList.length,
+                                                              itemBuilder: (context, index) {
+                                                                Sticker sticker = group.countries[j].stickerList[index];
                                                                 return Consumer<StickerProvider>(
                                                                   builder: (_, provider, __) {
-                                                                    ;
                                                                     return InkWell(
                                                                       onLongPress: () {
-                                                                        Sticker sticker = provider.getSticker(
-                                                                            group.countries[j], listStickerMissing, group.groupName != 'Especiales' ? indexc + 1 : indexc);
-                                                                        showDialogUpdate(
-                                                                            context, group.groupName != 'Especiales' ? indexc + 1 : indexc, sticker, _providerSticker);
+                                                                        showDialogUpdate(context, sticker, _providerSticker);
                                                                       },
-                                                                      onTap: () async => await provider.updateQuantityTeams(
-                                                                          group.countries[j], listStickerMissing, group.groupName != 'Especiales' ? indexc + 1 : indexc),
+                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j].stickerList[index]),
                                                                       child: Align(
                                                                         child: Text(
-                                                                          sum.toString(),
+                                                                          sticker.text,
                                                                           style: const TextStyle(fontSize: 18.0, color: Color.fromARGB(255, 110, 18, 52)),
                                                                         ),
                                                                       ),
@@ -359,7 +343,6 @@ class MyHomePage extends StatelessWidget {
                                                       primary: false,
                                                       itemCount: group.countries.length,
                                                       itemBuilder: (context, j) {
-                                                        sum = group.groupName != 'Especiales' ? 0 : -1;
                                                         return Column(
                                                           children: [
                                                             group.groupName != 'Especiales'
@@ -371,37 +354,31 @@ class MyHomePage extends StatelessWidget {
                                                             GridView.builder(
                                                               shrinkWrap: true,
                                                               primary: false,
-                                                              //      itemCount: group.countries[j].to - group.countries[j].from + (group.groupName != 'Especiales' ? 0 : 1),
+                                                              itemCount: group.countries[j].stickerList.length,
                                                               itemBuilder: (context, indexc) {
-                                                                sum += 1;
-                                                                int i = group.countries[j].from;
+                                                                Sticker sticker = group.countries[j].stickerList[indexc];
                                                                 return Consumer<StickerProvider>(
                                                                   builder: (_, provider, __) {
                                                                     return InkWell(
                                                                       onLongPress: () {
-                                                                        Sticker sticker = provider.getSticker(
-                                                                            group.countries[j], listStickerRepeated, group.groupName != 'Especiales' ? indexc + 1 : indexc);
-                                                                        showDialogUpdate(
-                                                                            context, group.groupName != 'Especiales' ? indexc + 1 : indexc, sticker, _providerSticker);
+                                                                        showDialogUpdate(context, sticker, _providerSticker);
                                                                       },
-                                                                      onTap: () async => await provider.updateQuantityTeams(
-                                                                          group.countries[j], listStickerRepeated, group.groupName != 'Especiales' ? indexc + 1 : indexc),
+                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j].stickerList[indexc]),
                                                                       child: Stack(
                                                                         children: [
                                                                           Align(
                                                                             child: Text(
-                                                                              sum.toString(),
+                                                                              sticker.text,
                                                                               style: const TextStyle(fontSize: 18.0, color: Color.fromARGB(255, 110, 18, 52)),
                                                                             ),
                                                                           ),
-                                                                          if (listStickerRepeated[i + sum].repeated > 0)
-                                                                            Align(
-                                                                              alignment: Alignment.bottomRight,
-                                                                              child: Text(
-                                                                                listStickerRepeated[i + sum].repeated.toString(),
-                                                                                style: const TextStyle(fontSize: 13.0, color: Color.fromARGB(255, 110, 18, 52)),
-                                                                              ),
-                                                                            )
+                                                                          Align(
+                                                                            alignment: Alignment.bottomRight,
+                                                                            child: Text(
+                                                                              (group.countries[j].stickerList[indexc].repeated - 1).toString(),
+                                                                              style: const TextStyle(fontSize: 13.0, color: Color.fromARGB(255, 110, 18, 52)),
+                                                                            ),
+                                                                          )
                                                                         ],
                                                                       ),
                                                                     );

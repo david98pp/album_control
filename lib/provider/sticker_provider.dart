@@ -18,8 +18,7 @@ class StickerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateQuantityTeams(Country country, List<Sticker> list, int pos) async {
-    Sticker sticker = getSticker(country, list, pos);
+  Future<void> updateQuantityTeams(Sticker sticker) async {
     sticker.repeated += 1;
     await AlbumData().saveStickerUpdate(sticker);
     notifyListeners();

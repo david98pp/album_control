@@ -12,9 +12,7 @@ class AlbumData extends ChangeNotifier {
   List<Group> groupList = [];
   List<Sticker> stickerList = [];
   List<Group> groupRepeatedList = [];
-  List<Sticker> stickerRepeatedList = [];
   List<Group> groupMissingList = [];
-  List<Sticker> stickerMissingList = [];
   bool loading = true;
 
   AlbumData() {
@@ -68,9 +66,11 @@ class AlbumData extends ChangeNotifier {
     groupList
         .map((g) => g.countries.map((c) {
               List<Sticker> _stickerListCopy = [];
+              int j = g.groupName == 'Especiales' ? 0 : 1;
               for (num i in range(c.from, c.to + 1)) {
-                stickerList.add(Sticker.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
-                _stickerListCopy.add(Sticker.params(i.toInt(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                stickerList.add(Sticker.params(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                _stickerListCopy.add(Sticker.params(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                j++;
                 if (stickers.isEmpty) {
                   duplicated[i.toString()] = 0;
                 }
@@ -78,16 +78,14 @@ class AlbumData extends ChangeNotifier {
               c.stickerList = _stickerListCopy;
             }).toList())
         .toList();
+
     if (stickers.isEmpty) {
       await _base.set('stickers', duplicated);
     }
 
-    final List<Sticker> _stickerListCopy = [...stickerList];
-    stickerMissingList = _stickerListCopy;
-    stickerMissingList.removeWhere((element) => element.repeated != 0);
     final List<Group> _copyGroupList = [...groupList];
     groupMissingList = _copyGroupList;
-    groupMissingList.removeWhere((element) {
+    _copyGroupList.removeWhere((element) {
       var res = false;
       element.countries.removeWhere((e) {
         e.stickerList.removeWhere((el) {
@@ -99,26 +97,24 @@ class AlbumData extends ChangeNotifier {
       return res;
     });
 
-    final List<Sticker> _stickerListCopyRepeated = [...stickerList];
-    stickerRepeatedList = _stickerListCopyRepeated;
-    stickerRepeatedList.removeWhere((element) => element.repeated < 2);
     final List<Group> _copyGroupListR = [...groupList];
-
-    ///TODO ver la lista de repetidos
     groupRepeatedList = _copyGroupListR;
     groupRepeatedList.removeWhere((element) {
-      var res = false;
+      bool res = false;
+      int i = 0;
       element.countries.removeWhere((e) {
-        e.stickerList.removeWhere((el) {
-          res = e.stickerList.every((elem) => elem.repeated < 2);
-          e.stickerList.removeWhere((element1) => element1.repeated < 2);
-          return res;
-        });
+        res = e.stickerList.every((e1) => e1.repeated < 2);
+        if (!res) {
+          i++;
+        }
         return res;
       });
-      return res;
+      return i == 0;
     });
-    groupRepeatedList;
+    //  groupList;
+    groupRepeatedList.map((e) => e.countries.map((el) => el.stickerList.removeWhere((element) => element.repeated < 2)).toList()).toList();
+    // groupList;
+    //   groupRepeatedList;
   }
 
   Future<void> saveStickerUpdate(Sticker sticker) async {

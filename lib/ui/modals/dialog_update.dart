@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 
 import '../../model/sticker_model.dart';
 
-void showDialogUpdate(BuildContext context, int text, Sticker sticker, StickerProvider providerSticker) {
-  TextEditingController controller = TextEditingController(text: sticker.repeated.toString());
+void showDialogUpdate(BuildContext context, Sticker sticker, StickerProvider providerSticker) {
+  TextEditingController controller = TextEditingController(text: (sticker.repeated - 1).toString());
 
   String? numberValidator(String? value) {
     if (value == null) {
@@ -21,7 +21,7 @@ void showDialogUpdate(BuildContext context, int text, Sticker sticker, StickerPr
   showDialog(
     context: context,
     builder: (_) => AlertDialog(
-      title: Text('Modificar Sticker ${text.toString()} de ${sticker.team}'),
+      title: Text('Modificar Sticker ${sticker.text} de ${sticker.team}'),
       content: Form(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,7 +53,7 @@ void showDialogUpdate(BuildContext context, int text, Sticker sticker, StickerPr
         TextButton(
             onPressed: () async {
               final navigator = Navigator.of(context);
-              await providerSticker.updateQuantityModal(sticker, int.tryParse(controller.text) ?? sticker.repeated);
+              await providerSticker.updateQuantityModal(sticker, int.tryParse(controller.text) ?? sticker.repeated - 1);
               navigator.pop();
             },
             child: const Text('Grabar')),

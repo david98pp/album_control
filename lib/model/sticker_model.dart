@@ -5,5 +5,9 @@ class Sticker {
   String group = '';
   int repeated = 0;
 
-  Sticker.params(this.number, this.text, this.team, this.group, this.repeated);
+  Sticker(this.number, this.text, this.team, this.group, this.repeated);
+
+  factory Sticker.copyWith(Sticker m) {
+    return Sticker(m.number, m.text, m.team, m.group, m.repeated);
+  }
 }

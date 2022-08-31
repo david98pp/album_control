@@ -68,8 +68,8 @@ class AlbumData extends ChangeNotifier {
               List<Sticker> _stickerListCopy = [];
               int j = g.groupName == 'Especiales' ? 0 : 1;
               for (num i in range(c.from, c.to + 1)) {
-                stickerList.add(Sticker.params(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
-                _stickerListCopy.add(Sticker.params(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                stickerList.add(Sticker(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
+                _stickerListCopy.add(Sticker(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
                 j++;
                 if (stickers.isEmpty) {
                   duplicated[i.toString()] = 0;
@@ -83,22 +83,23 @@ class AlbumData extends ChangeNotifier {
       await _base.set('stickers', duplicated);
     }
 
-    final List<Group> _copyGroupList = [...groupList];
-    groupMissingList = _copyGroupList;
-    _copyGroupList.removeWhere((element) {
-      var res = false;
+    //groupMissingList =groupList.map((e) => Group.copyWith(e.countries.map((i) => Country.copyWith(i)))).toList();
+    groupMissingList.removeWhere((element) {
+      bool res = false;
+      int i = 0;
       element.countries.removeWhere((e) {
-        e.stickerList.removeWhere((el) {
-          res = e.stickerList.every((elem) => elem.repeated != 0);
-          return res;
-        });
+        res = e.stickerList.every((e1) => e1.repeated != 0);
+        if (!res) {
+          i++;
+        }
         return res;
       });
-      return res;
+      return i == 0;
     });
 
-    final List<Group> _copyGroupListR = [...groupList];
-    groupRepeatedList = _copyGroupListR;
+    groupRepeatedList =groupList.map((e) => Group.copyWith(e)).toList();
+    // List<Group> _copyGroupListR =groupList.toList();
+    // groupRepeatedList = _copyGroupListR;
     groupRepeatedList.removeWhere((element) {
       bool res = false;
       int i = 0;

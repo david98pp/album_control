@@ -1,7 +1,7 @@
 class Data {
   Map toJson() {
     return {
-      'version': {'number': 1.5},
+      'version': {'number': 2},
       'groups': {
         'Grupo 0': {'name': 'Especiales', 'img': '', 'from': 0, 'to': 29},
         'Grupo 1': {

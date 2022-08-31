@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Control de stickers Mundial Qatar 2022',
       theme: ThemeData(primarySwatch: getMaterialColorFromColor(const Color.fromARGB(255, 110, 18, 52))),
-      home: ChangeNotifierProvider(create: (_) => StickerProvider(), child: MyHomePage()),
+      home: ChangeNotifierProvider(create: (_) => StickerProvider(), child: const MyHomePage()),
     );
   }
 }

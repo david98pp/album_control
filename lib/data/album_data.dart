@@ -82,8 +82,17 @@ class AlbumData extends ChangeNotifier {
     if (stickers.isEmpty) {
       await _base.set('stickers', duplicated);
     }
+    fillAllStickers();
+  }
 
-    //groupMissingList =groupList.map((e) => Group.copyWith(e.countries.map((i) => Country.copyWith(i)))).toList();
+  void fillAllStickers() {
+    groupMissingList = getNewGroupsInstance();
+    for (var element in groupMissingList) {
+      element.countries = List.from(getNewCountriesInstance(element.countries));
+      for (var element in element.countries) {
+        element.stickerList = List.from(getNewStickerInstance(element.stickerList));
+      }
+    }
     groupMissingList.removeWhere((element) {
       bool res = false;
       int i = 0;
@@ -97,9 +106,13 @@ class AlbumData extends ChangeNotifier {
       return i == 0;
     });
 
-    groupRepeatedList =groupList.map((e) => Group.copyWith(e)).toList();
-    // List<Group> _copyGroupListR =groupList.toList();
-    // groupRepeatedList = _copyGroupListR;
+    groupRepeatedList = getNewGroupsInstance();
+    for (var element in groupRepeatedList) {
+      element.countries = List.from(getNewCountriesInstance(element.countries));
+      for (var element in element.countries) {
+        element.stickerList = List.from(getNewStickerInstance(element.stickerList));
+      }
+    }
     groupRepeatedList.removeWhere((element) {
       bool res = false;
       int i = 0;
@@ -112,17 +125,43 @@ class AlbumData extends ChangeNotifier {
       });
       return i == 0;
     });
-    //  groupList;
-    groupRepeatedList.map((e) => e.countries.map((el) => el.stickerList.removeWhere((element) => element.repeated < 2)).toList()).toList();
-    // groupList;
-    //   groupRepeatedList;
+
+    for (var e in groupRepeatedList) {
+      for (var element in e.countries) {
+        element.stickerList.removeWhere((element) => element.repeated < 2);
+      }
+    }
+    for (var e in groupMissingList) {
+      for (var element in e.countries) {
+        element.stickerList.removeWhere((element) => element.repeated != 0);
+      }
+    }
   }
 
-  Future<void> saveStickerUpdate(Sticker sticker) async {
+  Future<void> saveStickerUpdate(Country country, Sticker sticker) async {
     Map stickers = await _base.get('stickers');
     Map duplicated = {};
     duplicated.addAll(stickers);
     duplicated[sticker.number.toString()] = sticker.repeated;
+    for (var e in groupMissingList) {
+      for (var element in e.countries) {
+        element.stickerList.firstWhere((element) => element == sticker);
+      }
+    }
     await _base.set('stickers', duplicated);
+  }
+
+  List<Group> getNewGroupsInstance() {
+    return groupList.map((e) => Group(e.groupName, e.countries)).toList();
+  }
+
+  List<Country> getNewCountriesInstance(List<Country> lst) {
+    // This function allows to perform a deep copy for the list:
+    return lst.map((e) => Country(e.name, e.img, e.from, e.to, e.stickerList)).toList();
+  }
+
+  List<Sticker> getNewStickerInstance(List<Sticker> lst) {
+    // This function allows to perform a deep copy for the list:
+    return lst.map((e) => Sticker(e.number, e.text, e.team, e.group, e.repeated)).toList();
   }
 }

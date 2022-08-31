@@ -6,21 +6,16 @@ import '../model/country_model.dart';
 import '../model/sticker_model.dart';
 
 class StickerProvider with ChangeNotifier {
-  Future<void> updateQuantity(Sticker sticker) async {
-    sticker.repeated += 1;
-    await AlbumData().saveStickerUpdate(sticker);
-    notifyListeners();
-  }
-
   Future<void> updateQuantityModal(Sticker sticker, int quantity) async {
     sticker.repeated = quantity;
     await AlbumData().saveStickerUpdate(sticker);
+    AlbumData().fillAllStickers();
     notifyListeners();
   }
 
-  Future<void> updateQuantityTeams(Sticker sticker) async {
+  Future<void> updateQuantityTeams(Country country, Sticker sticker, AlbumData album) async {
     sticker.repeated += 1;
-    await AlbumData().saveStickerUpdate(sticker);
+    await album.saveStickerUpdate(country, sticker);
     notifyListeners();
   }
 

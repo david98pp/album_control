@@ -175,7 +175,8 @@ class MyHomePage extends StatelessWidget {
                                                                       onLongPress: () {
                                                                         showDialogUpdate(context, sticker, _providerSticker);
                                                                       },
-                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j].stickerList[index]),
+                                                                      onTap: () async => await provider.updateQuantityTeams(
+                                                                          group.countries[j], group.countries[j].stickerList[index], providerAlbum),
                                                                       child: Stack(
                                                                         children: [
                                                                           Align(
@@ -275,7 +276,8 @@ class MyHomePage extends StatelessWidget {
                                                                       onLongPress: () {
                                                                         showDialogUpdate(context, sticker, _providerSticker);
                                                                       },
-                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j].stickerList[index]),
+                                                                      onTap: () async =>
+                                                                          await provider.updateQuantityTeams(group.countries[j].stickerList[index], providerAlbum),
                                                                       child: Align(
                                                                         child: Text(
                                                                           sticker.text,
@@ -363,7 +365,8 @@ class MyHomePage extends StatelessWidget {
                                                                       onLongPress: () {
                                                                         showDialogUpdate(context, sticker, _providerSticker);
                                                                       },
-                                                                      onTap: () async => await provider.updateQuantityTeams(group.countries[j].stickerList[indexc]),
+                                                                      onTap: () async =>
+                                                                          await provider.updateQuantityTeams(group.countries[j].stickerList[indexc], providerAlbum),
                                                                       child: Stack(
                                                                         children: [
                                                                           Align(

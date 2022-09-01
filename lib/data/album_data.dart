@@ -29,7 +29,6 @@ class AlbumData extends ChangeNotifier {
       } else if (data['version']['number'] != version['number']) {
         await loadInitialData(data, false);
       }
-      await initData();
       await generateStickerList();
       loading = false;
       notifyListeners();
@@ -44,7 +43,7 @@ class AlbumData extends ChangeNotifier {
     await _base.set('init', {'firstTime': isFirstTime});
   }
 
-  Future<void> initData() async {
+  Future<void> generateStickerList() async {
     Map data = await _base.get("groups");
     data.forEach((key, value) {
       List<Country> countryList = [];
@@ -58,9 +57,6 @@ class AlbumData extends ChangeNotifier {
       }
       groupList.add(Group(value['name'], countryList));
     });
-  }
-
-  Future<void> generateStickerList() async {
     Map stickers = await _base.get('stickers');
     Map duplicated = {};
     groupList
@@ -143,11 +139,65 @@ class AlbumData extends ChangeNotifier {
     Map duplicated = {};
     duplicated.addAll(stickers);
     duplicated[sticker.number.toString()] = sticker.repeated;
-    for (var e in groupMissingList) {
-      for (var element in e.countries) {
-        element.stickerList.firstWhere((element) => element == sticker);
+
+    for (var e in groupList) {
+      if (e.groupName == sticker.group) {
+        for (var element in e.countries) {
+          if (element.name == country.name) {
+            for (var elem in element.stickerList) {
+              if (elem.number == sticker.number) {
+                elem.repeated = sticker.repeated;
+                break;
+              }
+            }
+          }
+        }
       }
     }
+
+    /*for (var e in groupMissingList) {
+      if (e.groupName == sticker.group) {
+        for (var element in e.countries) {
+          if (element.name == country.name) {
+            for (var elem in element.stickerList) {
+              if (elem.number == sticker.number) {
+                element.stickerList.removeWhere((element) => element.number == sticker.number);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }*/
+
+    groupRepeatedList.clear();
+    groupMissingList.clear();
+    fillAllStickers();
+    /*groupRepeatedList = getNewGroupsInstance();
+    for (var element in groupRepeatedList) {
+      element.countries = List.from(getNewCountriesInstance(element.countries));
+      for (var element in element.countries) {
+        element.stickerList = List.from(getNewStickerInstance(element.stickerList));
+      }
+    }
+    groupRepeatedList.removeWhere((element) {
+      bool res = false;
+      int i = 0;
+      element.countries.removeWhere((e) {
+        res = e.stickerList.every((e1) => e1.repeated < 2);
+        if (!res) {
+          i++;
+        }
+        return res;
+      });
+      return i == 0;
+    });
+    for (var e in groupRepeatedList) {
+      for (var element in e.countries) {
+        element.stickerList.removeWhere((element) => element.repeated < 2);
+      }
+    }*/
+
     await _base.set('stickers', duplicated);
   }
 

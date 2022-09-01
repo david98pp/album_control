@@ -1,11 +1,13 @@
+import 'package:album_control/data/album_data.dart';
 import 'package:album_control/provider/sticker_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../model/country_model.dart';
 import '../../model/sticker_model.dart';
 
-void showDialogUpdate(BuildContext context, Sticker sticker, StickerProvider providerSticker) {
-  TextEditingController controller = TextEditingController(text: (sticker.repeated - 1).toString());
+void showDialogUpdate(BuildContext context, Country country, Sticker sticker, StickerProvider providerSticker, AlbumData albumData) {
+  TextEditingController controller = TextEditingController(text: (sticker.repeated).toString());
 
   String? numberValidator(String? value) {
     if (value == null) {
@@ -53,7 +55,7 @@ void showDialogUpdate(BuildContext context, Sticker sticker, StickerProvider pro
         TextButton(
             onPressed: () async {
               final navigator = Navigator.of(context);
-              await providerSticker.updateQuantityModal(sticker, int.tryParse(controller.text) ?? sticker.repeated - 1);
+              await providerSticker.updateQuantityModal(country, sticker, int.tryParse(controller.text) ?? sticker.repeated, albumData);
               navigator.pop();
             },
             child: const Text('Grabar')),

@@ -14,6 +14,11 @@ void showDialogStatistics(BuildContext context, List<Sticker> listSticker) {
   List<Sticker> listHave = [...listSticker];
   listHave.removeWhere((element) => element.repeated == 0);
 
+  int repeated = 0;
+  for (var element in listRepeated) {
+    repeated += element.repeated;
+  }
+
   Map<String, double> dataMap = {
     "Falta": listMissing.length / listSticker.length * 100,
     "Completo": listHave.length / listSticker.length * 100,
@@ -39,7 +44,7 @@ void showDialogStatistics(BuildContext context, List<Sticker> listSticker) {
                 ),
               ),
               Text('Faltan: ${listMissing.length}'),
-              Text('Repetidos: ${listRepeated.length}'),
+              Text('Repetidos: ${repeated.toString()}'),
             ],
           ),
         ),

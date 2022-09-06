@@ -1,6 +1,5 @@
 import 'package:album_control/data/album_data.dart';
 import 'package:album_control/model/group_model.dart';
-import 'package:album_control/model/sticker_model.dart';
 import 'package:album_control/provider/sticker_provider.dart';
 import 'package:album_control/ui/modals/dialog_about.dart';
 import 'package:album_control/ui/modals/dialog_instructions.dart';
@@ -39,7 +38,6 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var providerAlbum = context.watch<AlbumData>();
     _providerSticker = context.watch<StickerProvider>();
-    List<Sticker> listSticker = providerAlbum.stickerList;
     List<Group> listGroup = providerAlbum.groupList;
     List<Group> listGroupMissing = providerAlbum.groupMissingList;
     List<Group> listGroupRepeated = providerAlbum.groupRepeatedList;
@@ -73,7 +71,7 @@ class MyHomePage extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.data_saver_off_rounded),
                   title: const Text('Estadísticas'),
-                  onTap: () => showDialogStatistics(context, listSticker),
+                  onTap: () => showDialogStatistics(context, listGroup),
                 ),
                 ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
@@ -122,9 +120,9 @@ class MyHomePage extends StatelessWidget {
               )
             : TabBarView(
                 children: <Widget>[
-                  listStickerWidget(listGroup, providerAlbum, _providerSticker),
-                  listStickerWidget(listGroupMissing, providerAlbum, _providerSticker),
-                  listStickerWidget(listGroupRepeated, providerAlbum, _providerSticker),
+                  listStickerWidget(listGroup, providerAlbum, _providerSticker, 0),
+                  listStickerWidget(listGroupMissing, providerAlbum, _providerSticker, 1),
+                  listStickerWidget(listGroupRepeated, providerAlbum, _providerSticker, 2),
                 ],
               ),
       ),

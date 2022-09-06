@@ -10,7 +10,6 @@ import '../storage/db_repository.dart';
 class AlbumData extends ChangeNotifier {
   final DBRepository _base = DBRepository();
   List<Group> groupList = [];
-  List<Sticker> stickerList = [];
   List<Group> groupRepeatedList = [];
   List<Group> groupMissingList = [];
   bool loading = true;
@@ -64,7 +63,6 @@ class AlbumData extends ChangeNotifier {
               List<Sticker> _stickerListCopy = [];
               int j = g.groupName == 'Especiales' ? 0 : 1;
               for (num i in range(c.from, c.to + 1)) {
-                stickerList.add(Sticker(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
                 _stickerListCopy.add(Sticker(i.toInt(), j.toString(), c.name, g.groupName, stickers.isNotEmpty ? stickers[i.toString()] ?? 0 : 0));
                 j++;
                 if (stickers.isEmpty) {

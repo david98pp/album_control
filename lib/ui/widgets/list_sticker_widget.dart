@@ -9,7 +9,7 @@ import '../../provider/sticker_provider.dart';
 import '../modals/dialog_update.dart';
 import 'banner_ad_widget.dart';
 
-Widget listStickerWidget(List<Group> list, AlbumData providerAlbum, StickerProvider providerSticker) {
+Widget listStickerWidget(List<Group> list, AlbumData providerAlbum, StickerProvider providerSticker, int page) {
   return Container(
     color: const Color.fromARGB(255, 110, 18, 52),
     child: Padding(
@@ -53,15 +53,14 @@ Widget listStickerWidget(List<Group> list, AlbumData providerAlbum, StickerProvi
                                                   GridView.builder(
                                                     shrinkWrap: true,
                                                     primary: false,
-                                                    itemCount: group.countries[j].stickerList.length,
+                                                    itemCount: group.countries[j].stickerList.length - (group.groupName != 'Especiales' ? (page == 2 ? 0 : 1) : 0),
                                                     itemBuilder: (context, index) {
                                                       Sticker sticker = group.countries[j].stickerList[index];
                                                       return Consumer<StickerProvider>(
                                                         builder: (_, provider, __) {
                                                           return InkWell(
                                                             onLongPress: () => showDialogUpdate(context, group.countries[j], sticker, providerSticker, providerAlbum),
-                                                            onTap: () async =>
-                                                                await provider.updateQuantity(group.countries[j], group.countries[j].stickerList[index], providerAlbum),
+                                                            onTap: () async => await provider.updateQuantity(group.countries[j], group.countries[j].stickerList[index], providerAlbum),
                                                             child: Stack(
                                                               children: [
                                                                 Align(
@@ -74,7 +73,7 @@ Widget listStickerWidget(List<Group> list, AlbumData providerAlbum, StickerProvi
                                                                   Align(
                                                                     alignment: Alignment.bottomRight,
                                                                     child: Text(
-                                                                      sticker.repeated.toString(),
+                                                                      (sticker.repeated-(page==2?1:0)).toString(),
                                                                       style: const TextStyle(fontSize: 13.0, color: Color.fromARGB(255, 110, 18, 52)),
                                                                     ),
                                                                   )
@@ -108,16 +107,24 @@ Widget listStickerWidget(List<Group> list, AlbumData providerAlbum, StickerProvi
                 const BannerAdWidget(),
               ],
             )
-          : Row(
-              children: const [
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Text('No tienes stickers aquí', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                    ),
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        child: Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(15.0),
+                            child: Text('No tienes stickers aquí', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                const BannerAdWidget(),
               ],
             ),
     ),
